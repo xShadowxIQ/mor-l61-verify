@@ -1,0 +1,33 @@
+name: poc
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  eth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: forge install foundry-rs/forge-std --no-commit || true
+      - run: forge test --match-path 'test/eth/*' -vvv
+        env:
+          RPC_URL: https://ethereum-rpc.publicnode.com
+  base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: forge install foundry-rs/forge-std --no-commit || true
+      - run: forge test --match-path 'test/base/*' -vvv
+        env:
+          RPC_URL: https://base-rpc.publicnode.com
+  arb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: forge install foundry-rs/forge-std --no-commit || true
+      - run: forge test --match-path 'test/arb/*' -vvv
+        env:
+          RPC_URL: https://arbitrum-one-rpc.publicnode.com
