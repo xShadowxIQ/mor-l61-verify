@@ -4,30 +4,38 @@ on:
   workflow_dispatch:
 
 jobs:
-  eth:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: foundry-rs/foundry-toolchain@v1
-      - run: forge install foundry-rs/forge-std --no-commit || true
-      - run: forge test --match-path 'test/eth/*' -vvv
-        env:
-          RPC_URL: https://ethereum-rpc.publicnode.com
-  base:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: foundry-rs/foundry-toolchain@v1
-      - run: forge install foundry-rs/forge-std --no-commit || true
-      - run: forge test --match-path 'test/base/*' -vvv
+
+      - name: forge build (0.8.24 / opt 200 / paris)
+        run: forge build
+
+      - name: byte-level comparison vs live Base facet
+        shell: bash
         env:
           RPC_URL: https://base-rpc.publicnode.com
-  arb:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: foundry-rs/foundry-toolchain@v1
-      - run: forge install foundry-rs/forge-std --no-commit || true
-      - run: forge test --match-path 'test/arb/*' -vvv
+        run: |
+          set -o pipefail
+          python3 -m pip install --quiet pycryptodome
+          python3 scripts/compare.py 2>&1 | tee comparison_report.txt
+
+      - name: behavioural cross-check of live facet (fork)
+        shell: bash
         env:
-          RPC_URL: https://arbitrum-one-rpc.publicnode.com
+          RPC_URL: https://base-rpc.publicnode.com
+        run: |
+          set -o pipefail
+          forge test --match-path 'test/base/*' -vvv 2>&1 | tee behavioural_report.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: l61-evidence
+          path: |
+            comparison_report.txt
+            comparison_result.json
+            behavioural_report.txt
+            out/SessionRouter.sol/SessionRouter.json

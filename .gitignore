@@ -1,4 +1,5 @@
 out/
 cache/
-lib/
 broadcast/
+# L61: vendored sources (OZ 4.9.2, solidity-lib 2.7.6, morpheus @753accd, forge-std 1.9.4)
+# are committed so CI compiles a pinned, reproducible source set.
