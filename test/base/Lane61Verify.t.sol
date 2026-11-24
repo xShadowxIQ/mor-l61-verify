@@ -15,7 +15,7 @@ interface ISR61 {
 contract Lane61Verify is Test {
     uint256 constant BLOCK = 61_444_135;
     address constant DIAMOND = 0x6aBE1d282f72B474E54527D93b979A4f64d3030a;
-    address constant FACET = 0x3a3952f0e57b343f00b31f7da039ef16389b7260;
+    address constant FACET = 0x3a3952F0e57B343F00B31f7da039Ef16389B7260;
 
     bytes4 constant ERR_TOO_SHORT = 0xf0f669df; // keccak("SessionMaxDurationTooShort()")[0:4]
     bytes32 constant OWNER_SLOT = keccak256("diamond.standard.diamond.ownable.storage");
