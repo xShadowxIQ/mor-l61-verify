@@ -42,6 +42,8 @@ def main():
     art = json.load(open(ART))
     db = art["deployedBytecode"]
     obj = db["object"]
+    if obj.startswith("0x"):
+        obj = obj[2:]
     lrefs = db.get("linkReferences") or art.get("linkReferences") or {}
     irefs = db.get("immutableReferences") or art.get("immutableReferences") or {}
 
